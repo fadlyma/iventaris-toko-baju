@@ -4,9 +4,7 @@ import { useEffect, useState } from "react";
 import { fetchProducts } from "@/lib/api";
 import { Product } from "@/types";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
-import Navbar from "@/components/Navbar";
-import { Printer, Check, Trash2, Sparkles, CheckSquare } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -16,15 +14,24 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-
 import { QRCodeSVG } from "qrcode.react";
+import Navbar from "@/components/Navbar";
+import {
+  Printer,
+  Search,
+  RotateCcw,
+  LayoutGrid,
+  Eye,
+} from "lucide-react";
 
 export default function PrintPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    setMounted(true);
     fetchProducts().then(setProducts);
   }, []);
 
@@ -36,134 +43,216 @@ export default function PrintPage() {
 
   const toggleSelect = (id: number) => {
     const newSelected = new Set(selected);
-    if (newSelected.has(id)) newSelected.delete(id);
-    else newSelected.add(id);
+    newSelected.has(id) ? newSelected.delete(id) : newSelected.add(id);
     setSelected(newSelected);
   };
 
   const selectAll = () => {
-    if (selected.size === filteredProducts.length) {
+    if (
+      selected.size === filteredProducts.length &&
+      filteredProducts.length > 0
+    ) {
       setSelected(new Set());
     } else {
       setSelected(new Set(filteredProducts.map((p) => p.id)));
     }
   };
 
-  const handlePrint = () => {
-    window.print();
-  };
+  const handlePrint = () => window.print();
 
   const selectedProducts = products.filter((p) => selected.has(p.id));
 
+  if (!mounted) return null;
+
   return (
-    <div className="min-h-screen bg-white text-gray-800">
-      <Navbar />
+    <div className="min-h-screen bg-slate-50 text-slate-900">
+      <div className="print-hide">
+        <Navbar />
 
-      <div className="max-w-4xl mx-auto p-4 sm:p-8">
-        <div className="mb-6 flex flex-col gap-4 border-b pb-6">
-          <h1 className="text-xl font-bold uppercase">Filter & Cetak Label</h1>
+        <main className="max-w-7xl mx-auto px-6 py-8">
+          {/* Header */}
+          <div className="flex flex-col md:flex-row justify-between gap-6 mb-8">
+            <div>
+              <h1 className="text-3xl font-bold">Label Studio</h1>
+              <p className="text-sm text-slate-500 mt-1">
+                Pilih produk dan cetak label dengan tampilan rapi.
+              </p>
+            </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
-            <input
-              type="text"
-              placeholder="Cari Kode atau Nama Produk..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 w-full border border-gray-300 rounded px-4 py-2 focus:outline-none focus:ring-1 focus:ring-gray-400"
-            />
-
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={selectAll}
-                className="h-10 text-xs"
-              >
-                {selected.size === filteredProducts.length
-                  ? "Batal Semua"
-                  : "Pilih Semua"}
-              </Button>
+            <div className="flex items-center gap-4 bg-white border border-slate-200 rounded-xl p-4">
+              <span className="text-sm text-slate-500">
+                Dipilih:{" "}
+                <strong className="text-slate-900">{selected.size}</strong>
+              </span>
               <Button
                 onClick={handlePrint}
                 disabled={selected.size === 0}
-                className="h-10 px-6 bg-black hover:bg-gray-800 text-white font-bold text-xs"
+                className="bg-slate-900 hover:bg-slate-800 text-white rounded-lg px-6"
               >
-                CETAK ({selected.size})
+                <Printer className="w-4 h-4 mr-2" />
+                Cetak
               </Button>
             </div>
           </div>
-        </div>
 
-        <div className="border border-gray-200">
-          <Table>
-            <TableHeader className="bg-gray-50">
-              <TableRow>
-                <TableHead className="w-10"></TableHead>
-                <TableHead className="text-xs font-bold text-gray-500">
-                  KODE
-                </TableHead>
-                <TableHead className="text-xs font-bold text-gray-500">
-                  NAMA
-                </TableHead>
-                <TableHead className="text-xs font-bold text-gray-500 text-right">
-                  HARGA
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredProducts.length === 0 ? (
-                <TableRow>
-                  <TableCell
-                    colSpan={4}
-                    className="h-32 text-center text-gray-400 text-sm"
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* TABLE */}
+            <div className="lg:col-span-8">
+              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
+                <div className="p-4 flex gap-3 border-b border-slate-200">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Input
+                      placeholder="Cari kode atau nama produk"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9 h-11 border-slate-200 rounded-lg text-sm"
+                    />
+                  </div>
+                  <Button variant="outline" onClick={selectAll}>
+                    {selected.size === filteredProducts.length
+                      ? "Batal Semua"
+                      : "Pilih Semua"}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSelected(new Set());
+                    }}
                   >
-                    Produk tidak ditemukan.
-                  </TableCell>
-                </TableRow>
-              ) : (
-                filteredProducts.map((product) => (
-                  <TableRow
-                    key={product.id}
-                    className={`hover:bg-gray-50 cursor-pointer ${selected.has(product.id) ? "bg-gray-50" : ""}`}
-                    onClick={() => toggleSelect(product.id)}
-                  >
-                    <TableCell onClick={(e) => e.stopPropagation()}>
-                      <Checkbox
-                        checked={selected.has(product.id)}
-                        onCheckedChange={() => toggleSelect(product.id)}
-                      />
-                    </TableCell>
-                    <TableCell className="font-mono text-xs">
-                      {product.code}
-                    </TableCell>
-                    <TableCell className="text-sm">{product.name}</TableCell>
-                    <TableCell className="text-right text-sm font-medium">
-                      Rp{product.price.toLocaleString()}
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
+                    <RotateCcw className="w-4 h-4" />
+                  </Button>
+                </div>
+
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-12"></TableHead>
+                      <TableHead className="text-xs text-slate-400">
+                        Kode
+                      </TableHead>
+                      <TableHead className="text-xs text-slate-400">
+                        Produk
+                      </TableHead>
+                      <TableHead className="text-xs text-slate-400 text-right">
+                        Harga
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredProducts.length === 0 ? (
+                      <TableRow>
+                        <TableCell colSpan={4} className="py-20 text-center">
+                          <LayoutGrid className="mx-auto mb-2 text-slate-300" />
+                          <p className="text-xs text-slate-400">
+                            Data tidak ditemukan
+                          </p>
+                        </TableCell>
+                      </TableRow>
+                    ) : (
+                      filteredProducts.map((p) => (
+                        <TableRow
+                          key={p.id}
+                          className={`cursor-pointer ${
+                            selected.has(p.id)
+                              ? "bg-slate-100"
+                              : "hover:bg-slate-50"
+                          }`}
+                          onClick={() => toggleSelect(p.id)}
+                        >
+                          <TableCell
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <Checkbox
+                              checked={selected.has(p.id)}
+                              onCheckedChange={() => toggleSelect(p.id)}
+                            />
+                          </TableCell>
+                          <TableCell className="font-mono text-sm">
+                            {p.code}
+                          </TableCell>
+                          <TableCell className="font-medium text-sm">
+                            {p.name}
+                          </TableCell>
+                          <TableCell className="text-right font-semibold text-sm">
+                            Rp {p.price.toLocaleString("id-ID")}
+                          </TableCell>
+                        </TableRow>
+                      ))
+                    )}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+
+            {/* PREVIEW */}
+            <div className="lg:col-span-4">
+              <div className="sticky top-24 bg-white border border-slate-200 rounded-xl">
+                <div className="p-4 border-b border-slate-200 flex items-center gap-2">
+                  <Eye className="w-4 h-4 text-slate-500" />
+                  <h2 className="text-sm font-semibold">Pratinjau Label</h2>
+                </div>
+
+                <div className="p-6">
+                  {selectedProducts.length === 0 ? (
+                    <div className="border border-dashed border-slate-300 rounded-lg p-10 text-center text-slate-400 text-sm">
+                      Pilih produk untuk melihat label
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      <div className="border border-slate-200 rounded-lg p-6 text-center">
+                        <QRCodeSVG
+                          value={selectedProducts[0].code}
+                          size={140}
+                        />
+                        <p className="mt-4 text-xs font-mono text-slate-500">
+                          {selectedProducts[0].code}
+                        </p>
+                        <p className="font-semibold uppercase">
+                          {selectedProducts[0].name}
+                        </p>
+                        <p className="text-lg font-bold mt-2">
+                          Rp{" "}
+                          {selectedProducts[0].price.toLocaleString("id-ID")}
+                        </p>
+                      </div>
+
+                      <Button
+                        onClick={handlePrint}
+                        className="w-full bg-slate-900 hover:bg-slate-800 text-white"
+                      >
+                        Konfirmasi & Cetak
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
       </div>
 
-      <div className="hidden print:block p-4">
-        <div className="flex flex-wrap gap-4">
+      {/* PRINT AREA */}
+      <div
+        id="print-area"
+        className="hidden print:block fixed inset-0 bg-white p-8"
+      >
+        <div className="grid grid-cols-3 gap-6">
           {selectedProducts.map((p) => (
             <div
               key={p.id}
-              className="border border-black p-4 w-[60mm] h-[35mm] flex flex-col items-center justify-center text-center"
+              className="border p-4 text-center break-inside-avoid"
+              style={{ width: "68mm", height: "42mm" }}
             >
-              <QRCodeSVG value={p.code} size={60} />
-              <div className="mt-2">
-                <p className="text-[8px] font-mono">{p.code}</p>
-                <p className="text-[10px] font-bold truncate w-full">
-                  {p.name}
-                </p>
-                <p className="text-[12px] font-bold">
-                  Rp{p.price.toLocaleString()}
-                </p>
-              </div>
+              <QRCodeSVG value={p.code} size={90} />
+              <p className="text-xs font-mono mt-2">{p.code}</p>
+              <p className="text-sm font-semibold uppercase truncate">
+                {p.name}
+              </p>
+              <p className="text-lg font-bold">
+                Rp {p.price.toLocaleString("id-ID")}
+              </p>
             </div>
           ))}
         </div>
@@ -171,15 +260,23 @@ export default function PrintPage() {
 
       <style jsx global>{`
         @media print {
-          @page {
-            size: auto;
-            margin: 0;
-          }
           body {
-            background: white;
+            visibility: hidden;
           }
-          .min-h-screen {
-            display: none !important;
+          #print-area,
+          #print-area * {
+            visibility: visible;
+          }
+          #print-area {
+            position: absolute;
+            inset: 0;
+          }
+          .print-hide {
+            display: none;
+          }
+          @page {
+            size: A4;
+            margin: 8mm;
           }
         }
       `}</style>
