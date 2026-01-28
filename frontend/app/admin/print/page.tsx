@@ -22,7 +22,7 @@ import {
   LayoutGrid,
   Eye,
   CheckCircle2,
-  AlertTriangle,
+  ShieldAlert,
 } from "lucide-react";
 
 export default function PrintPage() {
@@ -30,11 +30,22 @@ export default function PrintPage() {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [mounted, setMounted] = useState(false);
-  const updateTimestamp = "16:47 - Jan 28";
+
+  // NUCLEAR VERSION: 16:53 WIB
+  const VERSION_MARK = "V6.1 - FINAL ALIGNMENT FIX";
 
   useEffect(() => {
     setMounted(true);
     fetchProducts().then(setProducts);
+
+    if (typeof window !== "undefined") {
+      const lastVer = localStorage.getItem("sticker_ver");
+      if (lastVer !== VERSION_MARK) {
+        localStorage.setItem("sticker_ver", VERSION_MARK);
+        // NUCLEAR REFRESH
+        location.reload();
+      }
+    }
   }, []);
 
   const filteredProducts = products.filter(
@@ -67,86 +78,91 @@ export default function PrintPage() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[#fff] text-slate-900 font-sans selection:bg-red-100 relative overflow-x-hidden">
+    <div className="min-h-screen bg-[#fff] text-slate-900 font-sans selection:bg-indigo-100 relative overflow-x-hidden">
       <div className="print-hide">
         <Navbar />
 
-        {/* Cache Warning Header */}
-        <div className="bg-red-600 text-white py-2 px-6 flex items-center justify-between font-bold text-xs uppercase tracking-[0.2em] shadow-lg">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="w-4 h-4 animate-pulse" />
-            <span>Sticker Mode v4.0 - No QR Code</span>
+        {/* NUCLEAR SYNC WARNING - RED ALERT */}
+        <div className="bg-red-600 text-white py-4 px-8 flex items-center justify-between font-black text-sm uppercase tracking-[0.4em] sticky top-0 z-[100] shadow-2xl">
+          <div className="flex items-center gap-4">
+            <ShieldAlert className="w-6 h-6 animate-ping" />
+            <span>SISTEM TERUPDATE: {VERSION_MARK}</span>
           </div>
-          <span>Last Updated: {updateTimestamp}</span>
+          <div className="flex gap-6 items-center">
+            <span className="bg-white text-red-600 px-3 py-1 rounded font-black">
+              NO QR CODE
+            </span>
+            <span className="opacity-70">RECALIBRATED 16:53</span>
+          </div>
         </div>
 
-        <main className="max-w-7xl mx-auto px-6 py-10">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-12 px-2">
-            <div className="space-y-3">
-              <h1 className="text-4xl font-black tracking-tight text-slate-900 uppercase">
-                Fix Sticker <span className="text-red-600">Alignment</span>
+        <main className="max-w-7xl mx-auto px-6 py-10 animate-in fade-in duration-1000">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-16">
+            <div className="space-y-4">
+              <h1 className="text-6xl font-black tracking-tighter text-slate-900 leading-none">
+                Sticker <span className="text-red-600 italic">Precision</span>
               </h1>
-              <p className="text-slate-500 font-medium text-lg">
-                Jika Anda masih melihat QR Code, tekan **Ctrl + F5** sekarang.
+              <p className="text-slate-400 font-bold text-lg max-w-sm leading-tight text-red-500/80">
+                Jika Anda tidak melihat bar merah ini, Anda masih di versi lama!
               </p>
             </div>
 
-            <div className="flex items-center gap-6 bg-white p-5 rounded-2xl border-2 border-slate-100 shadow-xl">
-              <div className="px-6 border-r border-slate-100 text-center">
-                <span className="text-[10px] font-bold text-slate-400 block tracking-widest uppercase mb-1">
-                  Queue
+            <div className="bg-white p-6 rounded-[2rem] border-4 border-red-600/10 shadow-2xl flex items-center gap-8 translate-y-2">
+              <div className="text-center px-4 border-r-2 border-slate-50">
+                <span className="text-[10px] font-black text-slate-300 block tracking-widest uppercase mb-1">
+                  Items
                 </span>
-                <span className="text-3xl font-black text-slate-900 leading-none">
+                <span className="text-4xl font-black text-slate-900 leading-none">
                   {selected.size}
                 </span>
               </div>
               <Button
                 onClick={handlePrint}
                 disabled={selected.size === 0}
-                className="bg-red-600 hover:bg-red-700 h-14 px-10 rounded-xl font-bold transition-all active:scale-95"
+                className="bg-red-600 hover:bg-black h-16 px-12 rounded-2xl font-black text-sm uppercase tracking-[0.2em] shadow-xl transition-all active:scale-95"
               >
-                Cetak Sticker
+                PRINT STICKER (FIX)
               </Button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
             <div className="lg:col-span-8">
-              <div className="bg-white border-2 border-slate-100 rounded-3xl overflow-hidden shadow-sm">
-                <div className="p-6 flex flex-col md:flex-row gap-4 bg-slate-50/50 border-b-2 border-slate-100">
+              <div className="bg-white border-2 border-slate-100 rounded-[2.5rem] shadow-sm overflow-hidden flex flex-col h-full overflow-y-auto max-h-[600px]">
+                <div className="p-8 flex items-center gap-4 bg-slate-50/50 sticky top-0 z-10 backdrop-blur-md">
                   <div className="relative flex-1 group">
-                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <Search className="absolute left-6 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-300 group-focus-within:text-red-500 transition-colors" />
                     <Input
-                      placeholder="Cari produk..."
+                      placeholder="Cari SKU atau Nama..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-12 h-12 bg-white border-slate-200 rounded-xl"
+                      className="pl-14 h-14 bg-white border-slate-200 rounded-2xl text-sm font-bold shadow-none focus-visible:ring-red-500"
                     />
                   </div>
                   <Button
                     variant="outline"
                     onClick={selectAll}
-                    className="h-12 px-6 rounded-xl font-bold"
+                    className="h-14 px-8 rounded-2xl border-slate-200 font-black text-[10px] tracking-widest"
                   >
                     {selected.size === filteredProducts.length
-                      ? "Batal Semua"
-                      : "Pilih Semua"}
+                      ? "BATAL SEMUA"
+                      : "PILIH SEMUA"}
                   </Button>
                 </div>
 
-                <div className="overflow-x-auto min-h-[400px]">
+                <div className="overflow-x-auto">
                   <Table>
                     <TableHeader>
-                      <TableRow className="hover:bg-transparent">
-                        <TableHead className="w-16"></TableHead>
-                        <TableHead className="font-bold text-[10px] uppercase py-6">
-                          ID
+                      <TableRow className="border-slate-50">
+                        <TableHead className="w-20 text-center"></TableHead>
+                        <TableHead className="text-[10px] font-black uppercase tracking-[0.3em] py-8">
+                          SKU
                         </TableHead>
-                        <TableHead className="font-bold text-[10px] uppercase">
-                          Nama Produk
+                        <TableHead className="text-[10px] font-black uppercase tracking-[0.3em]">
+                          Item
                         </TableHead>
-                        <TableHead className="font-bold text-[10px] uppercase text-right pr-10">
-                          Harga
+                        <TableHead className="text-[10px] font-black uppercase tracking-[0.3em] text-right pr-12">
+                          Price
                         </TableHead>
                       </TableRow>
                     </TableHeader>
@@ -154,7 +170,7 @@ export default function PrintPage() {
                       {filteredProducts.map((p) => (
                         <TableRow
                           key={p.id}
-                          className={`group cursor-pointer ${selected.has(p.id) ? "bg-red-50/30" : ""}`}
+                          className={`group cursor-pointer border-slate-50 transition-colors ${selected.has(p.id) ? "bg-red-50/30" : ""}`}
                           onClick={() => toggleSelect(p.id)}
                         >
                           <TableCell
@@ -164,15 +180,16 @@ export default function PrintPage() {
                             <Checkbox
                               checked={selected.has(p.id)}
                               onCheckedChange={() => toggleSelect(p.id)}
+                              className="rounded-md border-slate-200 data-[state=checked]:bg-red-600"
                             />
                           </TableCell>
-                          <TableCell className="font-mono font-bold text-slate-400">
+                          <TableCell className="font-mono font-black text-slate-400 text-xs">
                             {p.code}
                           </TableCell>
-                          <TableCell className="font-bold uppercase text-xs">
+                          <TableCell className="font-black text-slate-800 text-xs uppercase">
                             {p.name}
                           </TableCell>
-                          <TableCell className="text-right pr-10 font-bold">
+                          <TableCell className="text-right pr-12 font-black text-slate-900">
                             Rp {p.price.toLocaleString("id-ID")}
                           </TableCell>
                         </TableRow>
@@ -183,38 +200,37 @@ export default function PrintPage() {
               </div>
             </div>
 
-            <div className="lg:col-span-4 h-full relative">
-              <div className="sticky top-24 bg-white border-2 border-slate-100 rounded-3xl p-8 shadow-2xl">
-                <h2 className="text-sm font-black uppercase tracking-widest mb-8 flex items-center gap-2">
-                  <Eye className="w-4 h-4 text-red-600" />
-                  Pratinjau Stiker
+            <div className="lg:col-span-4 relative">
+              <div className="sticky top-40 bg-white border-2 border-slate-100 rounded-[2.5rem] p-10 shadow-2xl">
+                <h2 className="text-[11px] font-black uppercase tracking-[0.3em] mb-12 flex items-center gap-3 text-red-600">
+                  <Eye className="w-5 h-5" />
+                  Preview v6.1
                 </h2>
-
                 {selectedProducts.length > 0 ? (
-                  <div className="space-y-8 animate-in fade-in zoom-in-95 duration-300">
+                  <div className="space-y-12">
                     <div
-                      className="bg-white border-2 border-slate-900 rounded-lg p-6 flex flex-col items-center justify-center text-center shadow-lg mx-auto"
+                      className="bg-white border-2 border-slate-900 rounded-lg p-6 flex flex-col items-center justify-center text-center shadow-2xl mx-auto"
                       style={{ width: "260px", height: "140px" }}
                     >
-                      <p className="text-[10px] font-mono font-bold text-slate-400 mb-2">
+                      <p className="text-[10px] font-mono font-black text-slate-300 mb-2 tracking-[0.4em]">
                         {selectedProducts[0].code}
                       </p>
-                      <p className="text-[14px] font-black uppercase mb-4 leading-tight">
+                      <p className="text-[15px] font-black uppercase mb-4 leading-tight text-slate-900">
                         {selectedProducts[0].name}
                       </p>
-                      <p className="text-[20px] font-black">
+                      <p className="text-[24px] font-black text-black">
                         Rp {selectedProducts[0].price.toLocaleString("id-ID")}
                       </p>
                     </div>
                     <Button
                       onClick={handlePrint}
-                      className="w-full h-14 bg-slate-900 hover:bg-black text-white rounded-xl font-bold"
+                      className="w-full h-16 bg-red-600 hover:bg-black text-white rounded-2xl font-black text-xs uppercase tracking-[0.3em] shadow-xl"
                     >
-                      Cetak Cetak!
+                      PRINT TEST
                     </Button>
                   </div>
                 ) : (
-                  <div className="h-40 border-2 border-dashed border-slate-100 rounded-2xl flex items-center justify-center text-slate-300 font-bold text-xs uppercase tracking-widest">
+                  <div className="h-40 border-4 border-dashed border-slate-50 rounded-[2rem] flex flex-col items-center justify-center gap-4 text-slate-200 font-black text-[10px] uppercase tracking-[0.2em]">
                     Pilih Produk
                   </div>
                 )}
@@ -224,19 +240,19 @@ export default function PrintPage() {
         </main>
       </div>
 
-      {/* DEFINITIVE STICKER PRINT AREA - NO BORDERS TO PREVENT OUT-OF-BOX ISSUES */}
+      {/* DEFINITIVE STICKER PRINT AREA - NO BORDERS VERSION */}
       <div
         id="print-area"
-        className="hidden print:block fixed inset-0 z-[99999] bg-white p-0 m-0"
+        className="hidden print:block fixed inset-0 z-[100000] bg-white p-0 m-0"
       >
         <div
-          className="flex flex-wrap gap-0"
-          style={{ paddingLeft: "5mm", paddingTop: "5mm" }}
+          className="flex flex-wrap"
+          style={{ paddingLeft: "5.5mm", paddingTop: "5mm" }}
         >
           {selectedProducts.map((p) => (
             <div
               key={p.id}
-              className="flex flex-col items-center justify-center break-inside-avoid bg-white"
+              className="flex items-center justify-center break-inside-avoid bg-white"
               style={{
                 width: "68mm",
                 height: "42mm",
@@ -244,20 +260,20 @@ export default function PrintPage() {
                 position: "relative",
               }}
             >
-              {/* Visible border for testing alignment */}
-              <div className="border border-slate-200 w-[64mm] h-[34mm] flex flex-col items-center justify-center p-2 box-border">
-                <p className="text-[10px] font-mono font-bold text-slate-400 tracking-[0.2em] mb-1">
+              {/* Box Inti (Safe Zone) 62x34mm */}
+              <div className="w-[62mm] h-[34mm] flex flex-col items-center justify-center p-2 box-border border-0">
+                <p className="text-[11px] font-mono font-black text-slate-300 tracking-[0.4em] mb-3 uppercase leading-none">
                   {p.code}
                 </p>
-                <p className="text-[14px] font-black text-black uppercase leading-tight line-clamp-2 px-1 text-center mb-3 h-[2.5em] flex items-center">
+                <p className="text-[15px] font-black text-black uppercase leading-[1.1] line-clamp-2 px-2 text-center mb-5 h-[2.5em] flex items-center justify-center tracking-tight">
                   {p.name}
                 </p>
-                <div className="flex items-center justify-center gap-1 font-black text-[22px] text-black">
-                  <span className="text-[10px] font-bold opacity-30 mt-1">
+                <p className="text-[26px] font-black text-black leading-none tracking-tighter italic">
+                  <span className="text-[10px] non-italic font-bold opacity-30 mr-1.5 align-middle tracking-widest">
                     RP
                   </span>
-                  <span>{p.price.toLocaleString("id-ID")}</span>
-                </div>
+                  {p.price.toLocaleString("id-ID")}
+                </p>
               </div>
             </div>
           ))}
