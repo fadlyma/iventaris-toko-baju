@@ -14,7 +14,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
-import { QRCodeSVG } from "qrcode.react";
 import Navbar from "@/components/Navbar";
 import {
   Printer,
@@ -22,6 +21,8 @@ import {
   RotateCcw,
   LayoutGrid,
   Eye,
+  CheckCircle2,
+  AlertTriangle,
 } from "lucide-react";
 
 export default function PrintPage() {
@@ -29,6 +30,7 @@ export default function PrintPage() {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [mounted, setMounted] = useState(false);
+  const updateTimestamp = "16:47 - Jan 28";
 
   useEffect(() => {
     setMounted(true);
@@ -65,103 +67,98 @@ export default function PrintPage() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900">
+    <div className="min-h-screen bg-[#fff] text-slate-900 font-sans selection:bg-red-100 relative overflow-x-hidden">
       <div className="print-hide">
         <Navbar />
 
-        <main className="max-w-7xl mx-auto px-6 py-8">
-          {/* Header */}
-          <div className="flex flex-col md:flex-row justify-between gap-6 mb-8">
-            <div>
-              <h1 className="text-3xl font-bold">Label Studio</h1>
-              <p className="text-sm text-slate-500 mt-1">
-                Pilih produk dan cetak label dengan tampilan rapi.
+        {/* Cache Warning Header */}
+        <div className="bg-red-600 text-white py-2 px-6 flex items-center justify-between font-bold text-xs uppercase tracking-[0.2em] shadow-lg">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="w-4 h-4 animate-pulse" />
+            <span>Sticker Mode v4.0 - No QR Code</span>
+          </div>
+          <span>Last Updated: {updateTimestamp}</span>
+        </div>
+
+        <main className="max-w-7xl mx-auto px-6 py-10">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 mb-12 px-2">
+            <div className="space-y-3">
+              <h1 className="text-4xl font-black tracking-tight text-slate-900 uppercase">
+                Fix Sticker <span className="text-red-600">Alignment</span>
+              </h1>
+              <p className="text-slate-500 font-medium text-lg">
+                Jika Anda masih melihat QR Code, tekan **Ctrl + F5** sekarang.
               </p>
             </div>
 
-            <div className="flex items-center gap-4 bg-white border border-slate-200 rounded-xl p-4">
-              <span className="text-sm text-slate-500">
-                Dipilih:{" "}
-                <strong className="text-slate-900">{selected.size}</strong>
-              </span>
+            <div className="flex items-center gap-6 bg-white p-5 rounded-2xl border-2 border-slate-100 shadow-xl">
+              <div className="px-6 border-r border-slate-100 text-center">
+                <span className="text-[10px] font-bold text-slate-400 block tracking-widest uppercase mb-1">
+                  Queue
+                </span>
+                <span className="text-3xl font-black text-slate-900 leading-none">
+                  {selected.size}
+                </span>
+              </div>
               <Button
                 onClick={handlePrint}
                 disabled={selected.size === 0}
-                className="bg-slate-900 hover:bg-slate-800 text-white rounded-lg px-6"
+                className="bg-red-600 hover:bg-red-700 h-14 px-10 rounded-xl font-bold transition-all active:scale-95"
               >
-                <Printer className="w-4 h-4 mr-2" />
-                Cetak
+                Cetak Sticker
               </Button>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            {/* TABLE */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             <div className="lg:col-span-8">
-              <div className="bg-white border border-slate-200 rounded-xl overflow-hidden">
-                <div className="p-4 flex gap-3 border-b border-slate-200">
-                  <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <div className="bg-white border-2 border-slate-100 rounded-3xl overflow-hidden shadow-sm">
+                <div className="p-6 flex flex-col md:flex-row gap-4 bg-slate-50/50 border-b-2 border-slate-100">
+                  <div className="relative flex-1 group">
+                    <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <Input
-                      placeholder="Cari kode atau nama produk"
+                      placeholder="Cari produk..."
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-9 h-11 border-slate-200 rounded-lg text-sm"
+                      className="pl-12 h-12 bg-white border-slate-200 rounded-xl"
                     />
                   </div>
-                  <Button variant="outline" onClick={selectAll}>
+                  <Button
+                    variant="outline"
+                    onClick={selectAll}
+                    className="h-12 px-6 rounded-xl font-bold"
+                  >
                     {selected.size === filteredProducts.length
                       ? "Batal Semua"
                       : "Pilih Semua"}
                   </Button>
-                  <Button
-                    variant="ghost"
-                    onClick={() => {
-                      setSearchQuery("");
-                      setSelected(new Set());
-                    }}
-                  >
-                    <RotateCcw className="w-4 h-4" />
-                  </Button>
                 </div>
 
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="w-12"></TableHead>
-                      <TableHead className="text-xs text-slate-400">
-                        Kode
-                      </TableHead>
-                      <TableHead className="text-xs text-slate-400">
-                        Produk
-                      </TableHead>
-                      <TableHead className="text-xs text-slate-400 text-right">
-                        Harga
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredProducts.length === 0 ? (
-                      <TableRow>
-                        <TableCell colSpan={4} className="py-20 text-center">
-                          <LayoutGrid className="mx-auto mb-2 text-slate-300" />
-                          <p className="text-xs text-slate-400">
-                            Data tidak ditemukan
-                          </p>
-                        </TableCell>
+                <div className="overflow-x-auto min-h-[400px]">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="hover:bg-transparent">
+                        <TableHead className="w-16"></TableHead>
+                        <TableHead className="font-bold text-[10px] uppercase py-6">
+                          ID
+                        </TableHead>
+                        <TableHead className="font-bold text-[10px] uppercase">
+                          Nama Produk
+                        </TableHead>
+                        <TableHead className="font-bold text-[10px] uppercase text-right pr-10">
+                          Harga
+                        </TableHead>
                       </TableRow>
-                    ) : (
-                      filteredProducts.map((p) => (
+                    </TableHeader>
+                    <TableBody>
+                      {filteredProducts.map((p) => (
                         <TableRow
                           key={p.id}
-                          className={`cursor-pointer ${
-                            selected.has(p.id)
-                              ? "bg-slate-100"
-                              : "hover:bg-slate-50"
-                          }`}
+                          className={`group cursor-pointer ${selected.has(p.id) ? "bg-red-50/30" : ""}`}
                           onClick={() => toggleSelect(p.id)}
                         >
                           <TableCell
+                            className="text-center"
                             onClick={(e) => e.stopPropagation()}
                           >
                             <Checkbox
@@ -169,90 +166,99 @@ export default function PrintPage() {
                               onCheckedChange={() => toggleSelect(p.id)}
                             />
                           </TableCell>
-                          <TableCell className="font-mono text-sm">
+                          <TableCell className="font-mono font-bold text-slate-400">
                             {p.code}
                           </TableCell>
-                          <TableCell className="font-medium text-sm">
+                          <TableCell className="font-bold uppercase text-xs">
                             {p.name}
                           </TableCell>
-                          <TableCell className="text-right font-semibold text-sm">
+                          <TableCell className="text-right pr-10 font-bold">
                             Rp {p.price.toLocaleString("id-ID")}
                           </TableCell>
                         </TableRow>
-                      ))
-                    )}
-                  </TableBody>
-                </Table>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
             </div>
 
-            {/* PREVIEW */}
-            <div className="lg:col-span-4">
-              <div className="sticky top-24 bg-white border border-slate-200 rounded-xl">
-                <div className="p-4 border-b border-slate-200 flex items-center gap-2">
-                  <Eye className="w-4 h-4 text-slate-500" />
-                  <h2 className="text-sm font-semibold">Pratinjau Label</h2>
-                </div>
+            <div className="lg:col-span-4 h-full relative">
+              <div className="sticky top-24 bg-white border-2 border-slate-100 rounded-3xl p-8 shadow-2xl">
+                <h2 className="text-sm font-black uppercase tracking-widest mb-8 flex items-center gap-2">
+                  <Eye className="w-4 h-4 text-red-600" />
+                  Pratinjau Stiker
+                </h2>
 
-                <div className="p-6">
-                  {selectedProducts.length === 0 ? (
-                    <div className="border border-dashed border-slate-300 rounded-lg p-10 text-center text-slate-400 text-sm">
-                      Pilih produk untuk melihat label
+                {selectedProducts.length > 0 ? (
+                  <div className="space-y-8 animate-in fade-in zoom-in-95 duration-300">
+                    <div
+                      className="bg-white border-2 border-slate-900 rounded-lg p-6 flex flex-col items-center justify-center text-center shadow-lg mx-auto"
+                      style={{ width: "260px", height: "140px" }}
+                    >
+                      <p className="text-[10px] font-mono font-bold text-slate-400 mb-2">
+                        {selectedProducts[0].code}
+                      </p>
+                      <p className="text-[14px] font-black uppercase mb-4 leading-tight">
+                        {selectedProducts[0].name}
+                      </p>
+                      <p className="text-[20px] font-black">
+                        Rp {selectedProducts[0].price.toLocaleString("id-ID")}
+                      </p>
                     </div>
-                  ) : (
-                    <div className="space-y-6">
-                      <div className="border border-slate-200 rounded-lg p-6 text-center">
-                        <QRCodeSVG
-                          value={selectedProducts[0].code}
-                          size={140}
-                        />
-                        <p className="mt-4 text-xs font-mono text-slate-500">
-                          {selectedProducts[0].code}
-                        </p>
-                        <p className="font-semibold uppercase">
-                          {selectedProducts[0].name}
-                        </p>
-                        <p className="text-lg font-bold mt-2">
-                          Rp{" "}
-                          {selectedProducts[0].price.toLocaleString("id-ID")}
-                        </p>
-                      </div>
-
-                      <Button
-                        onClick={handlePrint}
-                        className="w-full bg-slate-900 hover:bg-slate-800 text-white"
-                      >
-                        Konfirmasi & Cetak
-                      </Button>
-                    </div>
-                  )}
-                </div>
+                    <Button
+                      onClick={handlePrint}
+                      className="w-full h-14 bg-slate-900 hover:bg-black text-white rounded-xl font-bold"
+                    >
+                      Cetak Cetak!
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="h-40 border-2 border-dashed border-slate-100 rounded-2xl flex items-center justify-center text-slate-300 font-bold text-xs uppercase tracking-widest">
+                    Pilih Produk
+                  </div>
+                )}
               </div>
             </div>
           </div>
         </main>
       </div>
 
-      {/* PRINT AREA */}
+      {/* DEFINITIVE STICKER PRINT AREA - NO BORDERS TO PREVENT OUT-OF-BOX ISSUES */}
       <div
         id="print-area"
-        className="hidden print:block fixed inset-0 bg-white p-8"
+        className="hidden print:block fixed inset-0 z-[99999] bg-white p-0 m-0"
       >
-        <div className="grid grid-cols-3 gap-6">
+        <div
+          className="flex flex-wrap gap-0"
+          style={{ paddingLeft: "5mm", paddingTop: "5mm" }}
+        >
           {selectedProducts.map((p) => (
             <div
               key={p.id}
-              className="border p-4 text-center break-inside-avoid"
-              style={{ width: "68mm", height: "42mm" }}
+              className="flex flex-col items-center justify-center break-inside-avoid bg-white"
+              style={{
+                width: "68mm",
+                height: "42mm",
+                overflow: "hidden",
+                position: "relative",
+              }}
             >
-              <QRCodeSVG value={p.code} size={90} />
-              <p className="text-xs font-mono mt-2">{p.code}</p>
-              <p className="text-sm font-semibold uppercase truncate">
-                {p.name}
-              </p>
-              <p className="text-lg font-bold">
-                Rp {p.price.toLocaleString("id-ID")}
-              </p>
+              {/* Visible border for testing alignment */}
+              <div className="border border-slate-200 w-[64mm] h-[34mm] flex flex-col items-center justify-center p-2 box-border">
+                <p className="text-[10px] font-mono font-bold text-slate-400 tracking-[0.2em] mb-1">
+                  {p.code}
+                </p>
+                <p className="text-[14px] font-black text-black uppercase leading-tight line-clamp-2 px-1 text-center mb-3 h-[2.5em] flex items-center">
+                  {p.name}
+                </p>
+                <div className="flex items-center justify-center gap-1 font-black text-[22px] text-black">
+                  <span className="text-[10px] font-bold opacity-30 mt-1">
+                    RP
+                  </span>
+                  <span>{p.price.toLocaleString("id-ID")}</span>
+                </div>
+              </div>
             </div>
           ))}
         </div>
@@ -260,23 +266,31 @@ export default function PrintPage() {
 
       <style jsx global>{`
         @media print {
+          html,
           body {
-            visibility: hidden;
+            visibility: hidden !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+            -webkit-print-color-adjust: exact !important;
           }
           #print-area,
           #print-area * {
-            visibility: visible;
+            visibility: visible !important;
           }
           #print-area {
-            position: absolute;
-            inset: 0;
+            position: absolute !important;
+            left: 0 !important;
+            top: 0 !important;
+            width: 210mm !important;
+            display: block !important;
           }
           .print-hide {
-            display: none;
+            display: none !important;
           }
           @page {
             size: A4;
-            margin: 8mm;
+            margin: 0mm;
           }
         }
       `}</style>
