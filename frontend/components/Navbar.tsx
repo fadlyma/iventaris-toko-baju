@@ -30,10 +30,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Desktop Logout Button - Hidden on Mobile */}
-          <div className="hidden md:block">
-            <LogoutButton />
-          </div>
+          <div className="hidden md:block">{/* Logout Removed */}</div>
 
           {/* Mobile Burger Menu Button - Visible on Mobile Only */}
           <button
@@ -58,7 +55,6 @@ export default function Navbar() {
               <p className="text-sm text-gray-600 mb-2">
                 Kelola inventaris dan penjualan Anda
               </p>
-              <LogoutButton />
             </div>
           </div>
         </div>

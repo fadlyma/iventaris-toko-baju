@@ -39,154 +39,209 @@ export default function PrintPage() {
   const selectedProducts = products.filter((p) => selected.has(p.id));
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50">
-      {/* Header - Hidden on Print */}
-      <div className="print:hidden bg-white/80 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="bg-gradient-to-br from-purple-600 to-pink-600 p-2 sm:p-3 rounded-xl shadow-lg">
-                <Printer className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+    <div className="min-h-screen bg-gray-50/50">
+      {/* Main Content */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900 tracking-tight">
+              Cetak Label
+            </h1>
+            <p className="text-gray-500 mt-1">
+              Pilih produk yang akan dicetak QR Code-nya
+            </p>
+          </div>
+
+          {/* Action Card - Visible on Desktop */}
+          <div className="hidden md:flex items-center gap-3 bg-white p-2 pr-4 rounded-xl shadow-sm border border-gray-200">
+            <div className="px-4 py-2 bg-indigo-50 rounded-lg text-indigo-700 font-medium text-sm">
+              {selected.size} Dipilih
+            </div>
+            <div className="h-8 w-px bg-gray-200 mx-2" />
+            {/* Print Button */}
+            <Button
+              onClick={handlePrint}
+              disabled={selected.size === 0}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-md hover:shadow-lg transition-all"
+            >
+              <Printer className="w-4 h-4 mr-2" />
+              Cetak Sekarang
+            </Button>
+          </div>
+        </div>
+
+        {/* Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Product List Panel */}
+          <div className="lg:col-span-2 space-y-4">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="p-4 border-b border-gray-100 flex items-center justify-between">
+                <h2 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <CheckSquare className="w-5 h-5 text-indigo-500" />
+                  Daftar Produk
+                </h2>
+                {/* Select All - Visible on all screens */}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={selectAll}
+                  className="text-indigo-600 hover:text-indigo-700 hover:bg-indigo-50"
+                >
+                  {selected.size === products.length
+                    ? "Batalkan Semua"
+                    : "Pilih Semua"}
+                </Button>
               </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                  Label Generator
-                </h1>
-                <p className="text-xs sm:text-sm text-gray-600">
-                  Pilih produk untuk cetak label dengan QR Code
-                </p>
+
+              <div className="p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[600px] overflow-y-auto custom-scrollbar">
+                {products.map((product) => (
+                  <div
+                    key={product.id}
+                    onClick={() => toggleSelect(product.id)}
+                    className={`
+                        relative group cursor-pointer p-3 rounded-xl border transition-all duration-200
+                        ${
+                          selected.has(product.id)
+                            ? "bg-indigo-50 border-indigo-200 ring-1 ring-indigo-200"
+                            : "bg-white border-gray-100 hover:border-indigo-100 hover:bg-gray-50"
+                        }
+                      `}
+                  >
+                    <div className="flex items-start gap-3">
+                      <div
+                        className={`
+                          mt-1 rounded-lg p-1.5 transition-colors
+                          ${selected.has(product.id) ? "bg-indigo-200 text-indigo-700" : "bg-gray-100 text-gray-400 group-hover:bg-indigo-50 group-hover:text-indigo-400"}
+                        `}
+                      >
+                        {selected.has(product.id) ? (
+                          <CheckSquare className="w-4 h-4" />
+                        ) : (
+                          <Square className="w-4 h-4" />
+                        )}
+                      </div>
+                      <div>
+                        <p
+                          className={`font-semibold text-sm ${selected.has(product.id) ? "text-indigo-900" : "text-gray-900"}`}
+                        >
+                          {product.code}
+                        </p>
+                        <p className="text-xs text-gray-500 line-clamp-1">
+                          {product.name}
+                        </p>
+                        <p className="text-xs font-medium text-gray-900 mt-1">
+                          Rp {product.price.toLocaleString("id-ID")}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
+            </div>
+          </div>
+
+          {/* Preview Panel - Sticky on Desktop */}
+          <div className="lg:col-span-1">
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 sticky top-8">
+              <h2 className="font-semibold text-gray-900 flex items-center gap-2 mb-6">
+                <Sparkles className="w-5 h-5 text-indigo-500" />
+                Live Preview
+              </h2>
+
+              {selectedProducts.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-gray-100 rounded-xl">
+                  <div className="bg-gray-50 p-4 rounded-full mb-3">
+                    <Printer className="w-6 h-6 text-gray-300" />
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    Pilih produk di samping
+                    <br />
+                    untuk melihat preview
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  <div className="border border-gray-200 rounded-lg p-4 bg-white shadow-sm flex flex-col items-center text-center">
+                    <div className="bg-white p-2">
+                      <QRCodeSVG
+                        value={selectedProducts[0].code}
+                        size={100}
+                        level="M"
+                      />
+                    </div>
+                    <div className="mt-3 space-y-1 w-full">
+                      <p className="font-mono font-bold text-gray-900">
+                        {selectedProducts[0].code}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate px-4">
+                        {selectedProducts[0].name}
+                      </p>
+                      <p className="font-bold text-indigo-600">
+                        Rp {selectedProducts[0].price.toLocaleString("id-ID")}
+                      </p>
+                    </div>
+                  </div>
+
+                  {selectedProducts.length > 1 && (
+                    <p className="text-center text-xs text-gray-400">
+                      + {selectedProducts.length - 1} label lainnya
+                    </p>
+                  )}
+
+                  <div className="pt-4 border-t border-gray-100">
+                    <div className="flex justify-between text-sm mb-4">
+                      <span className="text-gray-500">Total Label</span>
+                      <span className="font-semibold text-gray-900">
+                        {selected.size} pcs
+                      </span>
+                    </div>
+                    <Button
+                      onClick={handlePrint}
+                      className="w-full bg-gray-900 hover:bg-black text-white h-12 rounded-xl shadow-xl hover:shadow-2xl transition-all"
+                    >
+                      <Printer className="w-4 h-4 mr-2" />
+                      Cetak Sekarang
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Selection Panel - Hidden on Print */}
-      <div className="print:hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <div className="bg-white/80 backdrop-blur-lg rounded-2xl shadow-lg border border-gray-200 overflow-hidden">
-          <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-6 py-4 flex items-center justify-between">
-            <h2 className="text-xl font-semibold text-white flex items-center gap-2">
-              <Sparkles className="w-5 h-5" />
-              Pilih Produk
-            </h2>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={selectAll}
-              className="bg-white/20 hover:bg-white/30 text-white border-0"
-            >
-              {selected.size === products.length
-                ? "Batalkan Semua"
-                : "Pilih Semua"}
-            </Button>
-            <Button
-              onClick={handlePrint}
-              disabled={selected.size === 0}
-              size="sm"
-              className="ml-2 bg-white text-purple-600 hover:bg-purple-100 font-semibold shadow-md transition-all disabled:opacity-50 disabled:bg-gray-200 disabled:text-gray-400"
-            >
-              <Printer className="mr-2 h-4 w-4" />
-              Cetak {selected.size} Label
-            </Button>
+      {/* Mobile Floating Action Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+        <div className="flex items-center gap-3">
+          <div className="flex-1">
+            <p className="text-xs text-gray-500">Total Dipilih</p>
+            <p className="font-bold text-gray-900 text-lg">
+              {selected.size} Produk
+            </p>
           </div>
-          <div className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto">
-              {products.map((product) => (
-                <div
-                  key={product.id}
-                  onClick={() => toggleSelect(product.id)}
-                  className={`
-                    flex items-center space-x-3 p-4 rounded-xl border-2 cursor-pointer transition-all
-                    ${
-                      selected.has(product.id)
-                        ? "bg-gradient-to-br from-purple-50 to-pink-50 border-purple-500 shadow-md"
-                        : "bg-white border-gray-200 hover:border-purple-300 hover:shadow-sm"
-                    }
-                  `}
-                >
-                  <div className="flex-shrink-0">
-                    {selected.has(product.id) ? (
-                      <CheckSquare className="w-5 h-5 text-purple-600" />
-                    ) : (
-                      <Square className="w-5 h-5 text-gray-400" />
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-900 truncate">
-                      {product.code}
-                    </p>
-                    <p className="text-xs text-gray-600 truncate">
-                      {product.name}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Preview Section */}
-        <div className="mt-8 bg-white/80 backdrop-blur-lg rounded-2xl shadow-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-purple-600" />
-            Preview Label ({selectedProducts.length} dipilih)
-          </h3>
-          {selectedProducts.length === 0 ? (
-            <div className="text-center py-12 text-gray-400">
-              <p>Pilih produk untuk melihat preview label dengan QR Code</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {selectedProducts.map((product) => (
-                <div
-                  key={product.id}
-                  className="border-2 border-purple-300 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow"
-                >
-                  <div className="flex flex-col items-center gap-2">
-                    {/* QR Code */}
-                    <div className="bg-white p-2 rounded">
-                      <QRCodeSVG
-                        value={product.code}
-                        size={80}
-                        level="M"
-                        includeMargin={false}
-                      />
-                    </div>
-
-                    {/* Product Info */}
-                    <div className="text-center w-full">
-                      <div className="font-bold text-sm text-gray-900 font-mono">
-                        {product.code}
-                      </div>
-                      <div className="text-xs text-gray-600 truncate w-full px-1 mt-1">
-                        {product.name}
-                      </div>
-                      <div className="font-bold text-base text-purple-600 mt-2">
-                        Rp {product.price.toLocaleString("id-ID")}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+          <Button
+            onClick={handlePrint}
+            disabled={selected.size === 0}
+            className="bg-indigo-600 text-white rounded-xl px-8"
+          >
+            Cetak
+          </Button>
         </div>
       </div>
 
       {/* Print Area - Only Visible on Print */}
-      <div className="hidden print:block">
+      <div className="hidden print:block fixed inset-0 bg-white z-[9999]">
         <div className="grid grid-cols-3 gap-2 p-2">
           {selectedProducts.map((product) => (
             <div
               key={product.id}
-              className="border border-gray-300 p-3 bg-white flex flex-col items-center justify-center"
+              className="border border-gray-300 p-3 bg-white flex flex-col items-center justify-center break-inside-avoid"
               style={{
-                pageBreakInside: "avoid",
                 width: "70mm",
                 height: "40mm",
               }}
             >
-              {/* QR Code */}
               <div className="mb-2">
                 <QRCodeSVG
                   value={product.code}
@@ -195,9 +250,7 @@ export default function PrintPage() {
                   includeMargin={false}
                 />
               </div>
-
-              {/* Product Info */}
-              <div className="text-center">
+              <div className="text-center w-full">
                 <div className="font-bold text-xs font-mono">
                   {product.code}
                 </div>
@@ -219,20 +272,26 @@ export default function PrintPage() {
             size: A4;
             margin: 10mm;
           }
-
-          * {
-            -webkit-print-color-adjust: exact !important;
-            color-adjust: exact !important;
-            print-color-adjust: exact !important;
+          body {
+            print-color-adjust: exact;
+            -webkit-print-color-adjust: exact;
           }
-
           .print\\:hidden {
             display: none !important;
           }
-
           .print\\:block {
             display: block !important;
           }
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: #e2e8f0;
+          border-radius: 20px;
         }
       `}</style>
     </div>
