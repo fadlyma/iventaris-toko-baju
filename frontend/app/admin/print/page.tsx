@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { fetchProducts } from '@/lib/api';
-import { Product } from '@/types';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { Printer, CheckSquare, Square, Sparkles } from 'lucide-react';
-import LogoutButton from '@/components/LogoutButton';
-import { QRCodeSVG } from 'qrcode.react';
+import { useEffect, useState } from "react";
+import { fetchProducts } from "@/lib/api";
+import { Product } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Printer, CheckSquare, Square, Sparkles } from "lucide-react";
+
+import { QRCodeSVG } from "qrcode.react";
 
 export default function PrintPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -28,7 +28,7 @@ export default function PrintPage() {
     if (selected.size === products.length) {
       setSelected(new Set());
     } else {
-      setSelected(new Set(products.map(p => p.id)));
+      setSelected(new Set(products.map((p) => p.id)));
     }
   };
 
@@ -36,7 +36,7 @@ export default function PrintPage() {
     window.print();
   };
 
-  const selectedProducts = products.filter(p => selected.has(p.id));
+  const selectedProducts = products.filter((p) => selected.has(p.id));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-pink-50">
@@ -52,19 +52,10 @@ export default function PrintPage() {
                 <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                   Label Generator
                 </h1>
-                <p className="text-xs sm:text-sm text-gray-600">Pilih produk untuk cetak label dengan QR Code</p>
+                <p className="text-xs sm:text-sm text-gray-600">
+                  Pilih produk untuk cetak label dengan QR Code
+                </p>
               </div>
-            </div>
-            <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
-              <LogoutButton />
-              <Button 
-                onClick={handlePrint} 
-                disabled={selected.size === 0}
-                className="flex-1 sm:flex-initial bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg hover:shadow-xl transition-all disabled:opacity-50"
-              >
-                <Printer className="mr-2 h-4 w-4" />
-                Cetak {selected.size} Label
-              </Button>
             </div>
           </div>
         </div>
@@ -78,26 +69,38 @@ export default function PrintPage() {
               <Sparkles className="w-5 h-5" />
               Pilih Produk
             </h2>
-            <Button 
-              variant="secondary" 
+            <Button
+              variant="secondary"
               size="sm"
               onClick={selectAll}
               className="bg-white/20 hover:bg-white/30 text-white border-0"
             >
-              {selected.size === products.length ? 'Batalkan Semua' : 'Pilih Semua'}
+              {selected.size === products.length
+                ? "Batalkan Semua"
+                : "Pilih Semua"}
+            </Button>
+            <Button
+              onClick={handlePrint}
+              disabled={selected.size === 0}
+              size="sm"
+              className="ml-2 bg-white text-purple-600 hover:bg-purple-100 font-semibold shadow-md transition-all disabled:opacity-50 disabled:bg-gray-200 disabled:text-gray-400"
+            >
+              <Printer className="mr-2 h-4 w-4" />
+              Cetak {selected.size} Label
             </Button>
           </div>
           <div className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-h-[400px] overflow-y-auto">
-              {products.map(product => (
-                <div 
-                  key={product.id} 
+              {products.map((product) => (
+                <div
+                  key={product.id}
                   onClick={() => toggleSelect(product.id)}
                   className={`
                     flex items-center space-x-3 p-4 rounded-xl border-2 cursor-pointer transition-all
-                    ${selected.has(product.id) 
-                      ? 'bg-gradient-to-br from-purple-50 to-pink-50 border-purple-500 shadow-md' 
-                      : 'bg-white border-gray-200 hover:border-purple-300 hover:shadow-sm'
+                    ${
+                      selected.has(product.id)
+                        ? "bg-gradient-to-br from-purple-50 to-pink-50 border-purple-500 shadow-md"
+                        : "bg-white border-gray-200 hover:border-purple-300 hover:shadow-sm"
                     }
                   `}
                 >
@@ -112,7 +115,9 @@ export default function PrintPage() {
                     <p className="text-sm font-semibold text-gray-900 truncate">
                       {product.code}
                     </p>
-                    <p className="text-xs text-gray-600 truncate">{product.name}</p>
+                    <p className="text-xs text-gray-600 truncate">
+                      {product.name}
+                    </p>
                   </div>
                 </div>
               ))}
@@ -132,28 +137,32 @@ export default function PrintPage() {
             </div>
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-              {selectedProducts.map(product => (
-                <div 
-                  key={product.id} 
+              {selectedProducts.map((product) => (
+                <div
+                  key={product.id}
                   className="border-2 border-purple-300 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow"
                 >
                   <div className="flex flex-col items-center gap-2">
                     {/* QR Code */}
                     <div className="bg-white p-2 rounded">
-                      <QRCodeSVG 
-                        value={product.code} 
+                      <QRCodeSVG
+                        value={product.code}
                         size={80}
                         level="M"
                         includeMargin={false}
                       />
                     </div>
-                    
+
                     {/* Product Info */}
                     <div className="text-center w-full">
-                      <div className="font-bold text-sm text-gray-900 font-mono">{product.code}</div>
-                      <div className="text-xs text-gray-600 truncate w-full px-1 mt-1">{product.name}</div>
+                      <div className="font-bold text-sm text-gray-900 font-mono">
+                        {product.code}
+                      </div>
+                      <div className="text-xs text-gray-600 truncate w-full px-1 mt-1">
+                        {product.name}
+                      </div>
                       <div className="font-bold text-base text-purple-600 mt-2">
-                        Rp {product.price.toLocaleString('id-ID')}
+                        Rp {product.price.toLocaleString("id-ID")}
                       </div>
                     </div>
                   </div>
@@ -167,54 +176,60 @@ export default function PrintPage() {
       {/* Print Area - Only Visible on Print */}
       <div className="hidden print:block">
         <div className="grid grid-cols-3 gap-2 p-2">
-          {selectedProducts.map(product => (
-            <div 
-              key={product.id} 
+          {selectedProducts.map((product) => (
+            <div
+              key={product.id}
               className="border border-gray-300 p-3 bg-white flex flex-col items-center justify-center"
-              style={{ 
-                pageBreakInside: 'avoid',
-                width: '70mm',
-                height: '40mm'
+              style={{
+                pageBreakInside: "avoid",
+                width: "70mm",
+                height: "40mm",
               }}
             >
               {/* QR Code */}
               <div className="mb-2">
-                <QRCodeSVG 
-                  value={product.code} 
+                <QRCodeSVG
+                  value={product.code}
                   size={60}
                   level="M"
                   includeMargin={false}
                 />
               </div>
-              
+
               {/* Product Info */}
               <div className="text-center">
-                <div className="font-bold text-xs font-mono">{product.code}</div>
-                <div className="text-[10px] truncate w-full px-1 mt-0.5">{product.name}</div>
-                <div className="font-bold text-sm mt-1">Rp {product.price.toLocaleString('id-ID')}</div>
+                <div className="font-bold text-xs font-mono">
+                  {product.code}
+                </div>
+                <div className="text-[10px] truncate w-full px-1 mt-0.5">
+                  {product.name}
+                </div>
+                <div className="font-bold text-sm mt-1">
+                  Rp {product.price.toLocaleString("id-ID")}
+                </div>
               </div>
             </div>
           ))}
         </div>
       </div>
-      
+
       <style jsx global>{`
         @media print {
           @page {
             size: A4;
             margin: 10mm;
           }
-          
+
           * {
             -webkit-print-color-adjust: exact !important;
             color-adjust: exact !important;
             print-color-adjust: exact !important;
           }
-          
+
           .print\\:hidden {
             display: none !important;
           }
-          
+
           .print\\:block {
             display: block !important;
           }
