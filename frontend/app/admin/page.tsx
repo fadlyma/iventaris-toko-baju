@@ -6,7 +6,7 @@ import { Product } from "@/types";
 import InventoryTable from "@/components/InventoryTable";
 import DashboardCards from "@/components/DashboardCards";
 import ProductDialog from "@/components/ProductDialog";
-import LogoutButton from "@/components/LogoutButton";
+import Navbar from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Plus, Printer, Package, Sparkles } from "lucide-react";
@@ -94,26 +94,7 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-lg border-b border-gray-200 sticky top-0 z-10 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3 sm:gap-4">
-              <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-2 sm:p-3 rounded-xl shadow-lg">
-                <Package className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-              </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                  Dashboard Admin
-                </h1>
-                <p className="text-xs sm:text-sm text-gray-600">
-                  Kelola inventaris dan penjualan Anda
-                </p>
-              </div>
-            </div>
-            <LogoutButton />
-          </div>
-        </div>
-      </header>
+      <Navbar />
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6 sm:space-y-8">
